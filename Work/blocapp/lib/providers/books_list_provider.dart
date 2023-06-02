@@ -2,16 +2,23 @@ import 'dart:async';
 import 'dart:convert' show json;
 
 import 'package:blocapp/models/book_model.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class BooksListProvider {
   final _host = 'C://Users/tamer/Projects/flutter/Work/blocapp/lib/example';
 
   Future<List<BookModel>?> getBooks() async {
-    final results = await request(path: 'data.json', parameters: {});
-    return results['data']
+    final String source = await rootBundle.loadString('assets/sample.json');
+    final result = await json.decode(source);
+    return result['data']
         .map<BookModel>(BookModel.fromJson)
         .toList(growable: false);
+
+    // final results = await request(path: 'data.json', parameters: {});
+    // return results['data']
+    //     .map<BookModel>(BookModel.fromJson)
+    //     .toList(growable: false);
   }
 
   Future<BookModel?> getDetailBooks(String id) async {
