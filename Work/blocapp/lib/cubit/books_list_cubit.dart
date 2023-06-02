@@ -11,7 +11,7 @@ class BooksListCubit extends Cubit<BooksListState> {
 
   Future<void> getBooks() async {
     try {
-      emit(state.copyWith(status: ResultStatus.submitting));
+      emit(state.copyWith(status: ResultStatus.loading));
       final model = await _book.getBooks();
       emit(state.copyWith(status: ResultStatus.success, model: model));
     } catch (e) {
@@ -20,8 +20,8 @@ class BooksListCubit extends Cubit<BooksListState> {
   }
 
   Future<void> getDetailBooks(String id) async {
+    emit(state.copyWith(status: ResultStatus.loading));
     try {
-      emit(state.copyWith(status: ResultStatus.submitting));
       final model = await _book.getDetailBooks(id);
       emit(state.copyWith(status: ResultStatus.success, model: [model!]));
     } catch (e) {

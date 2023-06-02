@@ -2,44 +2,35 @@ import 'dart:async';
 import 'dart:convert' show json;
 
 import 'package:blocapp/models/book_model.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class BooksListProvider {
-  final _host = 'C://Users/tamer/Projects/flutter/Work/blocapp/lib/example';
+  final _host = 'moeydemo.azure-api.net';
 
   Future<List<BookModel>?> getBooks() async {
-    final String source = await rootBundle.loadString('assets/sample.json');
-    final result = await json.decode(source);
-    return result['data']
-        .map<BookModel>(BookModel.fromJson)
-        .toList(growable: false);
-
-    // final results = await request(path: 'data.json', parameters: {});
-    // return results['data']
-    //     .map<BookModel>(BookModel.fromJson)
-    //     .toList(growable: false);
+    final results = await request(path: 'books/books', parameters: {});
+    return results.map<BookModel>(BookModel.fromJson).toList(growable: false);
   }
 
   Future<BookModel?> getDetailBooks(String id) async {
     final results = await request(path: '/$id', parameters: {});
-    final data = results['data'];
-    return BookModel.fromJson(data);
+    return BookModel.fromJson(results);
   }
 
-  Future<Map> request({
+  Future<List> request({
     required String path,
     required Map<String, Object> parameters,
   }) async {
-    final uri = Uri.https(_host, '/$path', parameters);
+    final uri = Uri.https(_host, path, parameters);
     final headers = _headers;
     final results = await http.get(uri, headers: headers);
-    final jsonObject = json.decode(results.body);
-    return jsonObject;
+
+    return results.body.isEmpty ? [] : json.decode(results.body);
   }
 
   Map<String, String> get _headers => {
-        'content-type': 'application/vnd.api+json; charset=utf-8',
-        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+        "Ocp-Apim-Subscription-Key": "54761c68a1b14974ba10da1ffabcc640"
       };
 }

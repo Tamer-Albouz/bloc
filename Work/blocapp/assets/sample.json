@@ -4,7 +4,7 @@
       "id": "12345",
       "type": "book",
       "attributes": {
-        "uri": "https://example.com/book",
+        "uri": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo23tYn4lKpHQfnMMHNWcf3pSMyg3wNQrJT2yFJSHA&s",
         "name": "The Book",
         "description": "A great book",
         "released_at": "2022-01-01",
@@ -31,7 +31,7 @@
       "id": "67890",
       "type": "book",
       "attributes": {
-        "uri": "https://example.com/book",
+        "uri": "https://img.freepik.com/premium-photo/image-colorful-galaxy-sky-generative-ai_791316-9864.jpg?w=2000",
         "name": "The Book",
         "description": "A great book",
         "released_at": "2022-01-01",
@@ -58,7 +58,7 @@
       "id": "78901",
       "type": "book",
       "attributes": {
-        "uri": "https://example.com/book",
+        "uri": "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg",
         "name": "The Book",
         "description": "A great book",
         "released_at": "2022-01-01",

@@ -1,6 +1,6 @@
 import 'package:blocapp/models/book_model.dart';
 
-enum ResultStatus { initial, submitting, success, failure }
+enum ResultStatus { initial, loading, success, failure }
 
 class BooksListState {
   final List<BookModel>? model;
