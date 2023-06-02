@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:blocapp/cubit/books_list_cubit.dart';
+import 'package:blocapp/pages/book_details.dart';
 import 'package:blocapp/providers/books_list_provider.dart';
 import 'package:blocapp/repos/books_list_repository.dart';
 import 'package:blocapp/states/books_list_state.dart';
@@ -66,34 +67,25 @@ class _MyHomePageState extends State<MyHomePage> {
                   style: TextStyle(color: Colors.white),
                 );
               } else if (state.status == ResultStatus.loading) {
-                return ListView.builder(
-                  itemCount: state.model!.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8),
-                      child: ListTile(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0)),
-                        tileColor: const Color.fromRGBO(45, 45, 45, 1),
-                        contentPadding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                        title: Text(
-                          state.model![index].title!,
-                          style: const TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.w500),
-                        ),
-                        subtitle: Text(
-                          state.model![index].author!,
-                          style: const TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.w500),
-                        ),
+                return const CircularProgressIndicator(
+                  color: Colors.white,
+                );
+              } else if (state.status == ResultStatus.failure) {
+                return TextButton(
+                  child: Text(
+                    textAlign: TextAlign.center,
+                    "Oh No! Something went wrong\n${state.error}",
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    // Navigate to other page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BookDetails(id: "1"),
                       ),
                     );
                   },
-                );
-              } else if (state.status == ResultStatus.failure) {
-                return Text(
-                  state.error ?? '',
-                  style: const TextStyle(color: Colors.white),
                 );
               }
               return ListView.builder(
