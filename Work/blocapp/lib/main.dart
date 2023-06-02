@@ -1,6 +1,6 @@
-import 'package:blocapp/bloc/cubit/books_list_cubit.dart';
-import 'package:blocapp/bloc/providers/books_list_provider.dart';
-import 'package:blocapp/bloc/repos/books_list_repository.dart';
+import 'package:blocapp/cubit/books_list_cubit.dart';
+import 'package:blocapp/providers/books_list_provider.dart';
+import 'package:blocapp/repos/books_list_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -42,12 +42,17 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Scaffold(
         backgroundColor: Colors.deepPurple,
         appBar: AppBar(
+          centerTitle: true,
           title: Text(widget.title,
               style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.w400)),
+                  color: Colors.white, fontWeight: FontWeight.w500)),
           elevation: 0,
         ),
-        body: const Center(child: null),
+        body: const Center(
+          child: Card(
+            child: Text('Hello World'),
+          ),
+        ),
       ),
     );
   }

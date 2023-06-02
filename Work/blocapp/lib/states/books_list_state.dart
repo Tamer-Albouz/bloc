@@ -1,23 +1,23 @@
-import 'package:blocapp/bloc/models/book_model.dart';
+import 'package:blocapp/models/book_model.dart';
 
 enum ResultStatus { initial, submitting, success, failure }
 
-class BookDetailState {
-  final BookModel? model;
+class BooksListState {
+  final List<BookModel>? model;
   final ResultStatus? status;
   final String? error;
-  const BookDetailState({
+  const BooksListState({
     this.model,
     this.status,
     this.error,
   });
 
-  BookDetailState copyWith({
-    BookModel? model,
+  BooksListState copyWith({
+    List<BookModel>? model,
     ResultStatus? status,
     String? error,
   }) {
-    return BookDetailState(
+    return BooksListState(
       model: model ?? this.model,
       status: status ?? this.status,
       error: error ?? this.error,
