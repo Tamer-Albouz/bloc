@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Colors.white, fontWeight: FontWeight.w400)),
           elevation: 0,
         ),
-        body: Center(child: null),
+        body: const Center(child: null),
       ),
     );
   }
