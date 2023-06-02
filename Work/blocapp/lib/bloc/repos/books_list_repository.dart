@@ -11,9 +11,4 @@ class BooksListRepository implements BooksListRepositoryInterface {
   Future<List<BookModel>?> getBooks() async {
     return await _booksListProvider.getBooks();
   }
-
-  @override
-  Future<BookModel?> getBookDetail(String id) async {
-    return await _booksListProvider.getDetailBooks(id);
-  }
 }

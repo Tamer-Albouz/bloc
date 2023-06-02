@@ -18,14 +18,4 @@ class BooksListCubit extends Cubit<BooksListState> {
       emit(state.copyWith(status: ResultStatus.failure, error: e.toString()));
     }
   }
-
-  Future<void> getBookDetail(String id) async {
-    try {
-      emit(state.copyWith(status: ResultStatus.submitting));
-      final model = await _book.getBookDetail(id);
-      emit(state.copyWith(status: ResultStatus.success, model: model));
-    } catch (e) {
-      emit(state.copyWith(status: ResultStatus.failure, error: e.toString()));
-    }
-  }
 }
