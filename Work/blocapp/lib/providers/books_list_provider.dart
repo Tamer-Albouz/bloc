@@ -5,11 +5,10 @@ import 'package:blocapp/models/book_model.dart';
 import 'package:http/http.dart' as http;
 
 class BooksListProvider {
-  final _host = '';
-  final _contextRoot = '';
+  final _host = 'C://Users/tamer/Projects/flutter/Work/blocapp/lib/example';
 
   Future<List<BookModel>?> getBooks() async {
-    final results = await request(path: '', parameters: {});
+    final results = await request(path: 'data.json', parameters: {});
     return results['data']
         .map<BookModel>(BookModel.fromJson)
         .toList(growable: false);
@@ -25,7 +24,7 @@ class BooksListProvider {
     required String path,
     required Map<String, Object> parameters,
   }) async {
-    final uri = Uri.https(_host, '$_contextRoot/$path', parameters);
+    final uri = Uri.https(_host, '/$path', parameters);
     final headers = _headers;
     final results = await http.get(uri, headers: headers);
     final jsonObject = json.decode(results.body);
