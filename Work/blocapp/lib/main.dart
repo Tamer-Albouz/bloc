@@ -50,12 +50,11 @@ class _MyHomePageState extends State<MyHomePage> {
           elevation: 0,
         ),
         body: Center(
-          child: BlocConsumer<BooksListCubit, BooksListState>(
-            listener: (context, state) => const CircularProgressIndicator(
-              color: Colors.white,
-            ),
+          child: BlocBuilder<BooksListCubit, BooksListState>(
             builder: (context, state) {
-              if (state.status == ResultStatus.submitting) {
+              if (state.status == ResultStatus.initial) {
+                context.read<BooksListCubit>().getBooks();
+              } else if (state.status == ResultStatus.submitting) {
                 return const CircularProgressIndicator(
                   color: Colors.white,
                 );
