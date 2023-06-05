@@ -31,352 +31,478 @@ class MyHomePage extends StatelessWidget {
 
   final String title;
 
-  final TextEditingController _titleController = TextEditingController();
   final TextEditingController _editController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          BooksListCubit(book: BooksRepository(BooksProvider())),
-      child: Scaffold(
-        backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: BlocBuilder<BooksListCubit, BooksListState>(
-            builder: (context, state) => AppBar(
-              backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
-              title: Text(title,
-                  style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w500)),
-              elevation: 0,
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                  child: IconButton(
-                    onPressed: () {
-                      context.read<BooksListCubit>().getBooks();
-                    },
-                    icon: const Icon(Icons.refresh),
-                  ),
+    return Scaffold(
+      backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: BlocBuilder<BooksListCubit, BooksListState>(
+          builder: (context, state) => AppBar(
+            backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
+            title: Text(title,
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w500)),
+            elevation: 0,
+            actions: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                child: IconButton(
+                  onPressed: () {
+                    context.read<BooksListCubit>().getBooks();
+                  },
+                  icon: const Icon(Icons.refresh),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                  child: IconButton(
-                    onPressed: () {
-                      context.read<BooksListCubit>().emitFailure();
-                    },
-                    icon: const Icon(Icons.error),
-                  ),
-                )
-              ],
-            ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                child: IconButton(
+                  onPressed: () {
+                    context.read<BooksListCubit>().emitFailure();
+                  },
+                  icon: const Icon(Icons.error),
+                ),
+              )
+            ],
           ),
         ),
-        body: Center(
-          child: BlocConsumer<BooksListCubit, BooksListState>(
-            listenWhen: (previous, current) {
-              return previous.status != current.status;
-            },
-            listener: (context, state) {
-              if (state.status == ResultStatus.failure) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Oh No! Something went wrong!"),
-                    backgroundColor: Colors.red,
-                    duration: Duration(seconds: 1),
-                  ),
-                );
-              } else if (state.status == ResultStatus.success) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Success!"),
-                    backgroundColor: Colors.green,
-                    duration: Duration(seconds: 1),
-                  ),
-                );
-              } else if (state.status == ResultStatus.loading) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Loading..."),
-                    backgroundColor: Colors.blue,
-                    duration: Duration(seconds: 1),
-                  ),
-                );
-              }
-            },
-            builder: (context, state) {
-              if (state.status == ResultStatus.initial) {
-                context.read<BooksListCubit>().getBooks();
-                // Timer.periodic(const Duration(seconds: 15), (timer) {
-                //   // Make an API request to fetch the latest data
-                //   context.read<BooksListCubit>().getBooks();
-                // });
+      ),
+      body: Center(
+        child: BlocConsumer<BooksListCubit, BooksListState>(
+          listenWhen: (previous, current) {
+            return previous.status != current.status;
+          },
+          listener: (context, state) {
+            if (state.status == ResultStatus.failure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Oh No! Something went wrong!"),
+                  backgroundColor: Colors.red,
+                  duration: Duration(seconds: 1),
+                ),
+              );
+            } else if (state.status == ResultStatus.success) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Success!"),
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 1),
+                ),
+              );
+            } else if (state.status == ResultStatus.loading) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Loading..."),
+                  backgroundColor: Colors.blue,
+                  duration: Duration(seconds: 1),
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state.status == ResultStatus.initial) {
+              context.read<BooksListCubit>().getBooks();
+              // Timer.periodic(const Duration(seconds: 15), (timer) {
+              //   // Make an API request to fetch the latest data
+              //   context.read<BooksListCubit>().getBooks();
+              // });
 
-                return const Text(
-                  "No data",
-                  style: TextStyle(color: Colors.white),
-                );
-              } else if (state.status == ResultStatus.loading) {
-                return const CircularProgressIndicator(
-                  color: Colors.white,
-                );
-              } else if (state.status == ResultStatus.failure) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    textAlign: TextAlign.center,
-                    "${state.error}",
-                    style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w700),
-                  ),
-                );
-              }
+              return const Text(
+                "No data",
+                style: TextStyle(color: Colors.white),
+              );
+            } else if (state.status == ResultStatus.loading) {
+              return const CircularProgressIndicator(
+                color: Colors.white,
+              );
+            } else if (state.status == ResultStatus.failure) {
               return Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 5,
-                          child: TextField(
-                            controller: _titleController,
-                            cursorColor: Colors.white,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              hintText: "Enter Book Title",
-                              hintStyle: const TextStyle(color: Colors.white70),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: const BorderSide(
-                                  color: Colors.white38,
-                                  width: 1.0,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: const BorderSide(
-                                  color: Colors.white,
-                                  width: 2.0,
-                                ),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: const BorderSide(
-                                  color: Colors.white,
-                                  width: 2.0,
-                                ),
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  textAlign: TextAlign.center,
+                  "${state.error}",
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w700),
+                ),
+              );
+            }
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 55,
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.green)),
+                      onPressed: () {
+                        // post a book with json body
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlocProvider.value(
+                              value: BlocProvider.of<BooksListCubit>(context),
+                              child: AddBook(
+                                currentContext: context,
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        Expanded(
-                          child: SizedBox(
-                            height: 55,
-                            child: ElevatedButton(
-                              style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Colors.green)),
-                              onPressed: () {
-                                // post a book with json body
-                                context
-                                    .read<BooksListCubit>()
-                                    .postBook(<String, String>{
-                                  "title": _titleController.text,
-                                  "author": "John Doe"
-                                });
-                                _titleController.clear();
-                              },
-                              child: const Icon(
-                                Icons.add,
+                        );
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text(
+                            "Add A Book",
+                            style: TextStyle(
                                 color: Colors.white,
-                              ),
-                            ),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 20),
                           ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Icon(
+                            Icons.add,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  TextField(
+                    cursorColor: Colors.white,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: "Search Book Title...",
+                      hintStyle: const TextStyle(color: Colors.white70),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                          color: Colors.white38,
+                          width: 1.0,
                         ),
-                      ],
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                          color: Colors.white,
+                          width: 2.0,
+                        ),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                          color: Colors.white,
+                          width: 2.0,
+                        ),
+                      ),
                     ),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: state.model!.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                            child: ListTile(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0)),
-                              tileColor: const Color.fromRGBO(45, 45, 45, 1),
-                              contentPadding:
-                                  const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                              title: Text(
-                                state.model![index].title!,
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                              subtitle: Text(
-                                state.model![index].author!,
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                              trailing: IconButton(
-                                onPressed: () {
-                                  // Show alert dialog
-                                  showDialog(
-                                    context: context,
-                                    builder: (_) {
-                                      return AlertDialog(
-                                        backgroundColor: Colors.grey[900]!,
-                                        title: const Text(
-                                          "Delete Book",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        content: const Text(
-                                          "Are you sure you want to delete this book?",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context, false);
-                                            },
-                                            child: const Text(
-                                              "Cancel",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context, true);
-                                              context
-                                                  .read<BooksListCubit>()
-                                                  .deleteBook(state
-                                                      .model![index].rowKey!);
-                                            },
-                                            child: const Text(
-                                              "Delete",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.delete_outlined,
-                                  size: 28,
-                                  color: Colors.red,
-                                ),
-                              ),
-                              onTap: () {
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: state.model!.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                          child: ListTile(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0)),
+                            tileColor: const Color.fromRGBO(45, 45, 45, 1),
+                            contentPadding:
+                                const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                            title: Text(
+                              state.model![index].title!,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            subtitle: Text(
+                              state.model![index].author!,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            trailing: IconButton(
+                              onPressed: () {
                                 // Show alert dialog
                                 showDialog(
                                   context: context,
                                   builder: (_) {
-                                    return BlocProvider.value(
-                                      value: BlocProvider.of<BooksListCubit>(
-                                          context),
-                                      child: AlertDialog(
-                                        backgroundColor: Colors.grey[900]!,
-                                        title: const Text(
-                                          "Edit Book",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        content: TextField(
-                                          controller: _editController,
-                                          cursorColor: Colors.white,
-                                          style: const TextStyle(
-                                              color: Colors.white),
-                                          decoration: InputDecoration(
-                                            hintText: "Enter Book Title",
-                                            hintStyle: const TextStyle(
-                                                color: Colors.white70),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                              borderSide: const BorderSide(
-                                                color: Colors.white38,
-                                                width: 1.0,
-                                              ),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                              borderSide: const BorderSide(
-                                                color: Colors.white,
-                                                width: 2.0,
-                                              ),
-                                            ),
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                              borderSide: const BorderSide(
-                                                color: Colors.white,
-                                                width: 2.0,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context, false);
-                                            },
-                                            child: const Text(
-                                              "Cancel",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context, true);
-                                              context
-                                                  .read<BooksListCubit>()
-                                                  .patchBook(
-                                                      state.model![index]
-                                                          .rowKey!,
-                                                      <String, String>{
-                                                    "title":
-                                                        _editController.text,
-                                                    "author": "John Doe"
-                                                  });
-                                              _editController.clear();
-                                            },
-                                            child: const Text(
-                                              "Update",
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                        ],
+                                    return AlertDialog(
+                                      backgroundColor: Colors.grey[900]!,
+                                      title: const Text(
+                                        "Delete Book",
+                                        style: TextStyle(color: Colors.white),
                                       ),
+                                      content: const Text(
+                                        "Are you sure you want to delete this book?",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context, false);
+                                          },
+                                          child: const Text(
+                                            "Cancel",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context, true);
+                                            context
+                                                .read<BooksListCubit>()
+                                                .deleteBook(state
+                                                    .model![index].rowKey!);
+                                          },
+                                          child: const Text(
+                                            "Delete",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
                                     );
                                   },
                                 );
                               },
+                              icon: const Icon(
+                                Icons.delete_outlined,
+                                size: 28,
+                                color: Colors.red,
+                              ),
                             ),
-                          );
-                        },
+                            onTap: () {
+                              // Show alert dialog
+                              showDialog(
+                                context: context,
+                                builder: (_) {
+                                  return BlocProvider.value(
+                                    value: BlocProvider.of<BooksListCubit>(
+                                        context),
+                                    child: AlertDialog(
+                                      backgroundColor: Colors.grey[900]!,
+                                      title: const Text(
+                                        "Edit Book",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      content: TextField(
+                                        controller: _editController,
+                                        cursorColor: Colors.white,
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                        decoration: InputDecoration(
+                                          hintText: "Enter Book Title",
+                                          hintStyle: const TextStyle(
+                                              color: Colors.white70),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            borderSide: const BorderSide(
+                                              color: Colors.white38,
+                                              width: 1.0,
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            borderSide: const BorderSide(
+                                              color: Colors.white,
+                                              width: 2.0,
+                                            ),
+                                          ),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            borderSide: const BorderSide(
+                                              color: Colors.white,
+                                              width: 2.0,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context, false);
+                                          },
+                                          child: const Text(
+                                            "Cancel",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context, true);
+                                            context
+                                                .read<BooksListCubit>()
+                                                .patchBook(
+                                                    state.model![index].rowKey!,
+                                                    <String, String>{
+                                                  "title": _editController.text,
+                                                  "author": "John Doe"
+                                                });
+                                            _editController.clear();
+                                          },
+                                          child: const Text(
+                                            "Update",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class AddBook extends StatelessWidget {
+  final BuildContext currentContext;
+  AddBook({super.key, required this.currentContext});
+
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _authorController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
+      appBar: AppBar(
+        title: const Text(
+          "Add Book",
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
+        elevation: 0,
+      ),
+      body: BlocBuilder<BooksListCubit, BooksListState>(
+        builder: (context, state) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextField(
+                  controller: _titleController,
+                  cursorColor: Colors.white,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: "Enter Book Title",
+                    hintStyle: const TextStyle(color: Colors.white70),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(
+                        color: Colors.white38,
+                        width: 1.0,
                       ),
                     ),
-                  ],
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(
+                        color: Colors.white,
+                        width: 2.0,
+                      ),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(
+                        color: Colors.white,
+                        width: 2.0,
+                      ),
+                    ),
+                  ),
                 ),
-              );
-            },
-          ),
-        ),
+                const SizedBox(
+                  height: 8,
+                ),
+                TextField(
+                  controller: _authorController,
+                  cursorColor: Colors.white,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: "Enter Book Author",
+                    hintStyle: const TextStyle(color: Colors.white70),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(
+                        color: Colors.white38,
+                        width: 1.0,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(
+                        color: Colors.white,
+                        width: 2.0,
+                      ),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(
+                        color: Colors.white,
+                        width: 2.0,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 32,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.read<BooksListCubit>().postBook(<String, String>{
+                        "title": _titleController.text,
+                        "author": _authorController.text
+                      });
+                      _titleController.clear();
+                      _authorController.clear();
+                      Navigator.pop(context);
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.green),
+                    ),
+                    child: const Text(
+                      "Add Book",
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
