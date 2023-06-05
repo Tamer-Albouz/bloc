@@ -34,7 +34,18 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _editController = TextEditingController();
+
+  void handleSubmit(String id) {
+    if (_titleController.text.isNotEmpty) {
+      context.read<BooksListCubit>().patchBook(id, <String, String>{
+        "title": _titleController.text,
+      });
+
+      _titleController.clear();
+
+      Navigator.pop(context, true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -294,83 +305,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                 onTap: () {},
                                 trailing: IconButton(
                                   onPressed: () {
-                                    // show alert dialog with text field
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          backgroundColor: Colors.grey[900]!,
-                                          title: const Text(
-                                            "Edit Book",
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          content: TextField(
-                                            controller: _editController,
-                                            style: const TextStyle(
-                                                color: Colors.white),
-                                            decoration: InputDecoration(
-                                              hintText: "Enter Book Title",
-                                              hintStyle: const TextStyle(
-                                                  color: Colors.white70),
-                                              enabledBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                borderSide: const BorderSide(
-                                                  color: Colors.white38,
-                                                  width: 1.0,
-                                                ),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                borderSide: const BorderSide(
-                                                  color: Colors.white,
-                                                  width: 2.0,
-                                                ),
-                                              ),
-                                              border: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                borderSide: const BorderSide(
-                                                  color: Colors.white,
-                                                  width: 2.0,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context, false);
-                                              },
-                                              child: const Text(
-                                                "No",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                context
-                                                    .read<BooksListCubit>()
-                                                    .patchBook(
-                                                        state.model![index].id!,
-                                                        <String, String>{
-                                                      "title":
-                                                          _editController.text,
-                                                    });
-                                                Navigator.pop(context, true);
-                                              },
-                                              child: const Text(
-                                                "Yes",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      },
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditBookPage(
+                                          book: state.model![index].id!,
+                                          state: state,
+                                        ),
+                                      ),
                                     );
                                   },
                                   icon: const Icon(
@@ -398,5 +340,91 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     super.dispose();
+  }
+}
+
+class EditBookPage extends StatefulWidget {
+  final String book;
+  final BooksListState state;
+  const EditBookPage({super.key, required this.book, required this.state});
+
+  @override
+  State<EditBookPage> createState() => _EditBookPageState();
+}
+
+class _EditBookPageState extends State<EditBookPage> {
+  final TextEditingController _editController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) =>
+          BooksListCubit(book: BooksRepository(BooksProvider())),
+      child: Scaffold(
+        backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
+        appBar: AppBar(
+          title: const Text("Edit Book", style: TextStyle(color: Colors.white)),
+          backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
+          elevation: 0,
+        ),
+        body: BlocBuilder<BooksListCubit, BooksListState>(
+          builder: (context, state) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _editController,
+                    cursorColor: Colors.white,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: "Enter Book Title",
+                      hintStyle: const TextStyle(color: Colors.white70),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                          color: Colors.white38,
+                          width: 1.0,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                          color: Colors.white,
+                          width: 2.0,
+                        ),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: const BorderSide(
+                          color: Colors.white,
+                          width: 2.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.green),
+                    ),
+                    onPressed: () {
+                      context
+                          .read<BooksListCubit>()
+                          .patchBook(widget.book, <String, String>{
+                        "title": _editController.text,
+                      });
+
+                      _editController.clear();
+                      Navigator.pop(context);
+                    },
+                    child: const Text("Edit Book"),
+                  )
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 }

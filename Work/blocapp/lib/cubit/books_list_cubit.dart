@@ -47,10 +47,7 @@ class BooksListCubit extends Cubit<BooksListState> {
 
   Future<void> postBook(body) async {
     try {
-      emit(state.copyWith(status: ResultStatus.loading));
       await _book.postBook(body);
-      final model = await _book.getBooks();
-      emit(state.copyWith(status: ResultStatus.success, model: model));
     } catch (e) {
       emit(state.copyWith(status: ResultStatus.failure, error: e.toString()));
     }
