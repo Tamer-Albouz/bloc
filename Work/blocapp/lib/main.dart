@@ -6,7 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(BlocProvider(
+      create: (context) =>
+          BooksListCubit(book: BooksRepository(BooksProvider())),
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -18,21 +21,16 @@ class MyApp extends StatelessWidget {
       title: 'BLoC Demo',
       theme: ThemeData(primarySwatch: Colors.deepPurple, fontFamily: "Nunito"),
       debugShowCheckedModeBanner: false,
-      home: const MyHomePage(title: 'BLoC Demo'),
+      home: MyHomePage(title: 'BLoC Demo'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class MyHomePage extends StatelessWidget {
+  MyHomePage({super.key, required this.title});
 
   final String title;
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _editController = TextEditingController();
 
@@ -48,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: BlocBuilder<BooksListCubit, BooksListState>(
             builder: (context, state) => AppBar(
               backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
-              title: Text(widget.title,
+              title: Text(title,
                   style: const TextStyle(
                       color: Colors.white, fontWeight: FontWeight.w500)),
               elevation: 0,
@@ -77,6 +75,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: Center(
           child: BlocConsumer<BooksListCubit, BooksListState>(
+            listenWhen: (previous, current) {
+              return previous.status != current.status;
+            },
             listener: (context, state) {
               if (state.status == ResultStatus.failure) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -208,107 +209,163 @@ class _MyHomePageState extends State<MyHomePage> {
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-                            child: Dismissible(
-                              background: Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    borderRadius: BorderRadius.circular(8)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: const [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 16.0),
-                                      child: Icon(
-                                        Icons.delete,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
+                            child: ListTile(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0)),
+                              tileColor: const Color.fromRGBO(45, 45, 45, 1),
+                              contentPadding:
+                                  const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                              title: Text(
+                                state.model![index].title!,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              subtitle: Text(
+                                state.model![index].author!,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              trailing: IconButton(
+                                onPressed: () {
+                                  // Show alert dialog
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) {
+                                      return AlertDialog(
+                                        backgroundColor: Colors.grey[900]!,
+                                        title: const Text(
+                                          "Delete Book",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        content: const Text(
+                                          "Are you sure you want to delete this book?",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context, false);
+                                            },
+                                            child: const Text(
+                                              "Cancel",
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context, true);
+                                              context
+                                                  .read<BooksListCubit>()
+                                                  .deleteBook(state
+                                                      .model![index].rowKey!);
+                                            },
+                                            child: const Text(
+                                              "Delete",
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.delete_outlined,
+                                  size: 28,
+                                  color: Colors.red,
                                 ),
                               ),
-                              confirmDismiss: (direction) {
-                                return showDialog(
+                              onTap: () {
+                                // Show alert dialog
+                                showDialog(
                                   context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      backgroundColor: Colors.grey[900]!,
-                                      title: const Text(
-                                        "Delete Book",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      content: const Text(
-                                        "Are you sure you want to delete this book?",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context, false);
-                                          },
-                                          child: const Text(
-                                            "No",
-                                            style:
-                                                TextStyle(color: Colors.white),
+                                  builder: (_) {
+                                    return BlocProvider.value(
+                                      value: BlocProvider.of<BooksListCubit>(
+                                          context),
+                                      child: AlertDialog(
+                                        backgroundColor: Colors.grey[900]!,
+                                        title: const Text(
+                                          "Edit Book",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        content: TextField(
+                                          controller: _editController,
+                                          cursorColor: Colors.white,
+                                          style: const TextStyle(
+                                              color: Colors.white),
+                                          decoration: InputDecoration(
+                                            hintText: "Enter Book Title",
+                                            hintStyle: const TextStyle(
+                                                color: Colors.white70),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.white38,
+                                                width: 1.0,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.white,
+                                                width: 2.0,
+                                              ),
+                                            ),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.white,
+                                                width: 2.0,
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context, true);
-                                          },
-                                          child: const Text(
-                                            "Yes",
-                                            style:
-                                                TextStyle(color: Colors.white),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context, false);
+                                            },
+                                            child: const Text(
+                                              "Cancel",
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context, true);
+                                              context
+                                                  .read<BooksListCubit>()
+                                                  .patchBook(
+                                                      state.model![index]
+                                                          .rowKey!,
+                                                      <String, String>{
+                                                    "title":
+                                                        _editController.text,
+                                                    "author": "John Doe"
+                                                  });
+                                              _editController.clear();
+                                            },
+                                            child: const Text(
+                                              "Update",
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     );
                                   },
                                 );
                               },
-                              key: Key(state.model![index].id!),
-                              onDismissed: (direction) {
-                                context
-                                    .read<BooksListCubit>()
-                                    .deleteBook(state.model![index].id!);
-                              },
-                              child: ListTile(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0)),
-                                tileColor: const Color.fromRGBO(45, 45, 45, 1),
-                                contentPadding:
-                                    const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                                title: Text(
-                                  state.model![index].title!,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                subtitle: Text(
-                                  state.model![index].author!,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                trailing: IconButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => MyWidget(
-                                          id: state.model![index].id!,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  icon: const Icon(
-                                    Icons.edit_outlined,
-                                    size: 28,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
                             ),
                           );
                         },
@@ -318,105 +375,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               );
             },
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-}
-
-class MyWidget extends StatefulWidget {
-  final String id;
-  const MyWidget({super.key, required this.id});
-
-  @override
-  State<MyWidget> createState() => _MyWidgetState();
-}
-
-class _MyWidgetState extends State<MyWidget> {
-  final TextEditingController _titleController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          BooksListCubit(book: BooksRepository(BooksProvider())),
-      child: Scaffold(
-        backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
-        appBar: AppBar(
-          title: const Text("Edit Book", style: TextStyle(color: Colors.white)),
-          backgroundColor: const Color.fromRGBO(20, 20, 20, 1),
-          elevation: 0,
-        ),
-        body: BlocBuilder<BooksListCubit, BooksListState>(
-          builder: (context, state) => Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: _titleController,
-                  cursorColor: Colors.white,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    hintText: "Enter Book Title",
-                    hintStyle: const TextStyle(color: Colors.white70),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: const BorderSide(
-                        color: Colors.white38,
-                        width: 1.0,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: const BorderSide(
-                        color: Colors.white,
-                        width: 2.0,
-                      ),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: const BorderSide(
-                        color: Colors.white,
-                        width: 2.0,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.read<BooksListCubit>().patchBook(
-                        widget.id,
-                        <String, String>{
-                          "title": _titleController.text,
-                          "author": "John Doe"
-                        },
-                      );
-                      Navigator.pop(context);
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.green),
-                    ),
-                    child: const Text(
-                      "Update",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ),
         ),
       ),

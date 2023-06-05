@@ -27,6 +27,7 @@ class BooksListCubit extends Cubit<BooksListState> {
     try {
       emit(state.copyWith(status: ResultStatus.loading));
       await _book.patchBook(id, body);
+      emit(state.copyWith(status: ResultStatus.loading));
       final model = await _book.getBooks();
       emit(state.copyWith(status: ResultStatus.success, model: model));
     } catch (e) {
@@ -36,7 +37,10 @@ class BooksListCubit extends Cubit<BooksListState> {
 
   Future<void> deleteBook(String id) async {
     try {
+      emit(state.copyWith(status: ResultStatus.loading));
       await _book.deleteBook(id);
+      final model = await _book.getBooks();
+      emit(state.copyWith(status: ResultStatus.success, model: model));
     } catch (e) {
       emit(state.copyWith(status: ResultStatus.failure, error: e.toString()));
     }
