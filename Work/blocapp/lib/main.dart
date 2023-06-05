@@ -31,7 +31,8 @@ class MyHomePage extends StatelessWidget {
 
   final String title;
 
-  final TextEditingController _editController = TextEditingController();
+  final TextEditingController _editTitleController = TextEditingController();
+  final TextEditingController _editAuthorController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -129,85 +130,93 @@ class MyHomePage extends StatelessWidget {
               );
             }
             return Padding(
-              padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  SizedBox(
-                    height: 55,
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.green)),
-                      onPressed: () {
-                        // post a book with json body
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider.value(
-                              value: BlocProvider.of<BooksListCubit>(context),
-                              child: AddBook(
-                                currentContext: context,
+                  Container(
+                    color: const Color.fromRGBO(20, 20, 20, 1),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 55,
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all(Colors.green)),
+                            onPressed: () {
+                              // post a book with json body
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BlocProvider.value(
+                                    value: BlocProvider.of<BooksListCubit>(
+                                        context),
+                                    child: AddBook(
+                                      currentContext: context,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Text(
+                                  "Add A Book",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 20),
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        TextField(
+                          cursorColor: Colors.white,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            hintText: "Search Book Title...",
+                            hintStyle: const TextStyle(color: Colors.white70),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: const BorderSide(
+                                color: Colors.white38,
+                                width: 1.0,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                                width: 2.0,
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                                width: 2.0,
                               ),
                             ),
                           ),
-                        );
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text(
-                            "Add A Book",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 20),
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Icon(
-                            Icons.add,
-                            color: Colors.white,
-                          ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  TextField(
-                    cursorColor: Colors.white,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: "Search Book Title...",
-                      hintStyle: const TextStyle(color: Colors.white70),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: const BorderSide(
-                          color: Colors.white38,
-                          width: 1.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: const BorderSide(
-                          color: Colors.white,
-                          width: 2.0,
-                        ),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: const BorderSide(
-                          color: Colors.white,
-                          width: 2.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 8,
                   ),
                   Expanded(
                     child: ListView.builder(
@@ -299,39 +308,94 @@ class MyHomePage extends StatelessWidget {
                                         "Edit Book",
                                         style: TextStyle(color: Colors.white),
                                       ),
-                                      content: TextField(
-                                        controller: _editController,
-                                        cursorColor: Colors.white,
-                                        style: const TextStyle(
-                                            color: Colors.white),
-                                        decoration: InputDecoration(
-                                          hintText: "Enter Book Title",
-                                          hintStyle: const TextStyle(
-                                              color: Colors.white70),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            borderSide: const BorderSide(
-                                              color: Colors.white38,
-                                              width: 1.0,
+                                      content: SizedBox(
+                                        height: 150,
+                                        child: Column(
+                                          children: [
+                                            TextField(
+                                              controller: _editTitleController,
+                                              cursorColor: Colors.white,
+                                              style: const TextStyle(
+                                                  color: Colors.white),
+                                              decoration: InputDecoration(
+                                                hintText: "Enter Book Title",
+                                                hintStyle: const TextStyle(
+                                                    color: Colors.white70),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                  borderSide: const BorderSide(
+                                                    color: Colors.white38,
+                                                    width: 1.0,
+                                                  ),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                  borderSide: const BorderSide(
+                                                    color: Colors.white,
+                                                    width: 2.0,
+                                                  ),
+                                                ),
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                  borderSide: const BorderSide(
+                                                    color: Colors.white,
+                                                    width: 2.0,
+                                                  ),
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            borderSide: const BorderSide(
-                                              color: Colors.white,
-                                              width: 2.0,
+                                            const SizedBox(
+                                              height: 8,
                                             ),
-                                          ),
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            borderSide: const BorderSide(
-                                              color: Colors.white,
-                                              width: 2.0,
+                                            TextField(
+                                              controller: _editAuthorController,
+                                              cursorColor: Colors.white,
+                                              style: const TextStyle(
+                                                  color: Colors.white),
+                                              decoration: InputDecoration(
+                                                hintText: "Enter Book Author",
+                                                hintStyle: const TextStyle(
+                                                    color: Colors.white70),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                  borderSide: const BorderSide(
+                                                    color: Colors.white38,
+                                                    width: 1.0,
+                                                  ),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                  borderSide: const BorderSide(
+                                                    color: Colors.white,
+                                                    width: 2.0,
+                                                  ),
+                                                ),
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                  borderSide: const BorderSide(
+                                                    color: Colors.white,
+                                                    width: 2.0,
+                                                  ),
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ),
                                       ),
                                       actions: [
@@ -353,10 +417,14 @@ class MyHomePage extends StatelessWidget {
                                                 .patchBook(
                                                     state.model![index].rowKey!,
                                                     <String, String>{
-                                                  "title": _editController.text,
-                                                  "author": "John Doe"
+                                                  "title":
+                                                      _editTitleController.text,
+                                                  "author":
+                                                      _editAuthorController
+                                                          .text,
                                                 });
-                                            _editController.clear();
+                                            _editTitleController.clear();
+                                            _editAuthorController.clear();
                                           },
                                           child: const Text(
                                             "Update",
