@@ -34,18 +34,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _titleController = TextEditingController();
-
-  void handleSubmit(String id) {
-    if (_titleController.text.isNotEmpty) {
-      context.read<BooksListCubit>().patchBook(id, <String, String>{
-        "title": _titleController.text,
-      });
-
-      _titleController.clear();
-
-      Navigator.pop(context, true);
-    }
-  }
+  final TextEditingController _editController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -302,15 +291,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                       color: Colors.white,
                                       fontWeight: FontWeight.w500),
                                 ),
-                                onTap: () {},
                                 trailing: IconButton(
                                   onPressed: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => EditBookPage(
-                                          book: state.model![index].id!,
-                                          state: state,
+                                        builder: (context) => MyWidget(
+                                          id: state.model![index].id!,
                                         ),
                                       ),
                                     );
@@ -343,17 +330,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class EditBookPage extends StatefulWidget {
-  final String book;
-  final BooksListState state;
-  const EditBookPage({super.key, required this.book, required this.state});
+class MyWidget extends StatefulWidget {
+  final String id;
+  const MyWidget({super.key, required this.id});
 
   @override
-  State<EditBookPage> createState() => _EditBookPageState();
+  State<MyWidget> createState() => _MyWidgetState();
 }
 
-class _EditBookPageState extends State<EditBookPage> {
-  final TextEditingController _editController = TextEditingController();
+class _MyWidgetState extends State<MyWidget> {
+  final TextEditingController _titleController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -368,61 +354,70 @@ class _EditBookPageState extends State<EditBookPage> {
           elevation: 0,
         ),
         body: BlocBuilder<BooksListCubit, BooksListState>(
-          builder: (context, state) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  TextField(
-                    controller: _editController,
-                    cursorColor: Colors.white,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: "Enter Book Title",
-                      hintStyle: const TextStyle(color: Colors.white70),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: const BorderSide(
-                          color: Colors.white38,
-                          width: 1.0,
-                        ),
+          builder: (context, state) => Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _titleController,
+                  cursorColor: Colors.white,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: "Enter Book Title",
+                    hintStyle: const TextStyle(color: Colors.white70),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(
+                        color: Colors.white38,
+                        width: 1.0,
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: const BorderSide(
-                          color: Colors.white,
-                          width: 2.0,
-                        ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(
+                        color: Colors.white,
+                        width: 2.0,
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: const BorderSide(
-                          color: Colors.white,
-                          width: 2.0,
-                        ),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: const BorderSide(
+                        color: Colors.white,
+                        width: 2.0,
                       ),
                     ),
                   ),
-                  ElevatedButton(
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.read<BooksListCubit>().patchBook(
+                        widget.id,
+                        <String, String>{
+                          "title": _titleController.text,
+                          "author": "John Doe"
+                        },
+                      );
+                      Navigator.pop(context);
+                    },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(Colors.green),
                     ),
-                    onPressed: () {
-                      context
-                          .read<BooksListCubit>()
-                          .patchBook(widget.book, <String, String>{
-                        "title": _editController.text,
-                      });
-
-                      _editController.clear();
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Edit Book"),
-                  )
-                ],
-              ),
-            );
-          },
+                    child: const Text(
+                      "Update",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
