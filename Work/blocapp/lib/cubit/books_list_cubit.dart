@@ -1,13 +1,17 @@
-import 'package:blocapp/repos/books_list_repository.dart';
+import 'package:blocapp/repos/books_repository.dart';
 import 'package:blocapp/states/books_list_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BooksListCubit extends Cubit<BooksListState> {
-  final BooksListRepository _book;
+  final BooksRepository _book;
 
-  BooksListCubit({required BooksListRepository book})
+  BooksListCubit({required BooksRepository book})
       : _book = book,
         super(const BooksListState(model: null, status: ResultStatus.initial));
+
+  // Emit failure state
+  void emitFailure() =>
+      emit(state.copyWith(status: ResultStatus.failure, model: null));
 
   Future<void> getBooks() async {
     try {
@@ -19,11 +23,34 @@ class BooksListCubit extends Cubit<BooksListState> {
     }
   }
 
-  Future<void> getDetailBooks(String id) async {
-    emit(state.copyWith(status: ResultStatus.loading));
+  Future<void> patchBook(String id, body) async {
     try {
-      final model = await _book.getDetailBooks(id);
-      emit(state.copyWith(status: ResultStatus.success, model: [model!]));
+      emit(state.copyWith(status: ResultStatus.loading));
+      await _book.patchBook(id, body);
+      final model = await _book.getBooks();
+      emit(state.copyWith(status: ResultStatus.success, model: model));
+    } catch (e) {
+      emit(state.copyWith(status: ResultStatus.failure, error: e.toString()));
+    }
+  }
+
+  Future<void> deleteBook(String id) async {
+    try {
+      emit(state.copyWith(status: ResultStatus.loading));
+      await _book.deleteBook(id);
+      final model = await _book.getBooks();
+      emit(state.copyWith(status: ResultStatus.success, model: model));
+    } catch (e) {
+      emit(state.copyWith(status: ResultStatus.failure, error: e.toString()));
+    }
+  }
+
+  Future<void> postBook(body) async {
+    try {
+      emit(state.copyWith(status: ResultStatus.loading));
+      await _book.postBook(body);
+      final model = await _book.getBooks();
+      emit(state.copyWith(status: ResultStatus.success, model: model));
     } catch (e) {
       emit(state.copyWith(status: ResultStatus.failure, error: e.toString()));
     }

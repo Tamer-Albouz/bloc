@@ -1,85 +1,52 @@
-{
-  "data": [
-    {
-      "id": "12345",
-      "type": "book",
-      "attributes": {
-        "uri": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo23tYn4lKpHQfnMMHNWcf3pSMyg3wNQrJT2yFJSHA&s",
-        "name": "The Book",
-        "description": "A great book",
-        "released_at": "2022-01-01",
-        "free": true,
-        "difficulty": "Intermediate",
-        "content_type": "eBook",
-        "duration": 120,
-        "popularity": 4.5,
-        "technology_triple_string": "Java, Spring, Hibernate",
-        "contributor_string": "John Doe",
-        "ordinal": "1st",
-        "professional": true,
-        "description_plain_text": "Lorem ipsum dolor sit amet",
-        "video_identifier": 123456,
-        "parent_name": 789,
-        "accessible": true,
-        "card_artwork_url": "https://example.com/book/card.jpg"
-      },
-      "links": {
-        "self": "https://example.com/books/12345"
-      }
-    },
-    {
-      "id": "67890",
-      "type": "book",
-      "attributes": {
-        "uri": "https://img.freepik.com/premium-photo/image-colorful-galaxy-sky-generative-ai_791316-9864.jpg?w=2000",
-        "name": "The Book",
-        "description": "A great book",
-        "released_at": "2022-01-01",
-        "free": true,
-        "difficulty": "Intermediate",
-        "content_type": "eBook",
-        "duration": 120,
-        "popularity": 4.5,
-        "technology_triple_string": "Java, Spring, Hibernate",
-        "contributor_string": "John Doe",
-        "ordinal": "1st",
-        "professional": true,
-        "description_plain_text": "Lorem ipsum dolor sit amet",
-        "video_identifier": 123456,
-        "parent_name": 789,
-        "accessible": true,
-        "card_artwork_url": "https://example.com/book/card.jpg"
-      },
-      "links": {
-        "self": "https://example.com/books/67890"
-      }
-    },
-    {
-      "id": "78901",
-      "type": "book",
-      "attributes": {
-        "uri": "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg",
-        "name": "The Book",
-        "description": "A great book",
-        "released_at": "2022-01-01",
-        "free": true,
-        "difficulty": "Intermediate",
-        "content_type": "eBook",
-        "duration": 120,
-        "popularity": 4.5,
-        "technology_triple_string": "Java, Spring, Hibernate",
-        "contributor_string": "John Doe",
-        "ordinal": "1st",
-        "professional": true,
-        "description_plain_text": "Lorem ipsum dolor sit amet",
-        "video_identifier": 123456,
-        "parent_name": 789,
-        "accessible": true,
-        "card_artwork_url": "https://example.com/book/card.jpg"
-      },
-      "links": {
-        "self": "https://example.com/books/78901"
-      }
-    }
-  ]
-}
+[
+  {
+    "id": "12345",
+    "title": "book",
+    "author": "John Doe"
+  },
+  {
+    "id": "67890",
+    "title": "book",
+    "author": "John Doe"
+  },
+  {
+    "id": "12345",
+    "title": "book",
+    "author": "John Doe"
+  },
+  {
+    "id": "67890",
+    "title": "book",
+    "author": "John Doe"
+  },
+  {
+    "id": "12345",
+    "title": "book",
+    "author": "John Doe"
+  },
+  {
+    "id": "67890",
+    "title": "book",
+    "author": "John Doe"
+  },
+  {
+    "id": "12345",
+    "title": "book",
+    "author": "John Doe"
+  },
+  {
+    "id": "67890",
+    "title": "book",
+    "author": "John Doe"
+  },
+  {
+    "id": "12345",
+    "title": "book",
+    "author": "John Doe"
+  },
+  {
+    "id": "67890",
+    "title": "book",
+    "author": "John Doe"
+  }
+]
